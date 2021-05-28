@@ -7,6 +7,7 @@ class MainTest(TestCase):
     def create_app(self):
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
+        app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
 
         return app
 
@@ -26,13 +27,9 @@ class MainTest(TestCase):
         self.assert200(response)
 
     def test_hello_post(self):
-        fake_form = {
-            'username' : 'fake',
-            'password' : 'fake-password'
-        }
-        response = self.client.post(url_for('hello'), data=fake_form)
+        response = self.client.post(url_for('hello'))
 
-        self.assertRedirects(response, url_for('index'))
+        self.assertTrue(response.status_code, 405)
 
     def test_auth_blueprint_exists(self):
         self.assertIn('auth', self.app.blueprints)
@@ -46,3 +43,12 @@ class MainTest(TestCase):
         self.client.get(url_for('auth.login'))
 
         self.assertTemplateUsed('login.html')
+
+    def test_auth_login_post(self):
+        fake_form = {
+            'username' : 'fake',
+            'password' : 'fake-password'
+        }
+
+        response = self.client.post(url_for('auth.login'), data = fake_form)
+        self.assertRedirects(response, url_for('index'))
