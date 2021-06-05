@@ -4,3 +4,4 @@ flask-wtf
 flask-testing
 blinker
 flask-SQLAlchemy
+flask-login
