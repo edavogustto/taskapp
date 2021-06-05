@@ -1,12 +1,12 @@
+from enum import auto
 from flask import render_template, session, redirect, url_for, flash
-import flask_login
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user
-
 from app.forms import LoginForm
 
 from . import auth
 
-from app.models import UserData, get_user, UserModel
+from app.models import db, UserData, get_user, UserModel, Users
 
 
 
@@ -50,3 +50,30 @@ def logout():
     flash('Regresa pronto')
 
     return redirect(url_for('auth.login'))
+
+@auth.route('signup', methods=['GET', 'POST'])
+def signup():
+    signup_form = LoginForm()
+    context = {
+        'signup_form': signup_form
+
+    }
+
+    if signup_form.validate_on_submit():
+        username = signup_form.username.data
+        password = signup_form.password.data
+
+        user = Users.query.filter_by(username=username).first()
+
+        if user:
+            flash('Nombre de usuario existente')
+            return redirect(url_for('auth.signup'))
+
+        new_user = Users(username=username, password=generate_password_hash(password, method='sha256'))
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        return redirect(url_for('auth.login'))
+
+    return render_template('signup.html', **context)
