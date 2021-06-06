@@ -32,6 +32,11 @@ class Todos(db.Model):
 def get_user(username):
     return Users.query.filter_by(username=username).first()
 
+def get_id_user(username):
+    active_user = get_user(username)
+    return active_user.id
+
+
 class UserData:
     def __init__(self, username, password):
         self.username = username
@@ -46,7 +51,7 @@ class UserModel(UserMixin):
         user_doc = get_user(username)
         user_data = UserData(
         username=user_doc.username,
-        password=user_doc.password
+        password=user_doc.password,
         )
 
         return UserModel(user_data) 

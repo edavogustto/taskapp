@@ -21,6 +21,7 @@ def login():
         password = login_form.password.data
 
         user_doc = get_user(username)
+        user_id = user_doc.id
 
         if user_doc is not None:
             if check_password_hash(user_doc.password, password):
