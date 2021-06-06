@@ -1,14 +1,12 @@
+from app.models import Todos
 from flask import app, request, make_response, redirect, render_template, session, url_for, flash
 import unittest
 from flask_login import login_required, current_user
 from app import create_app
 from app.forms import LoginForm
-
+from app.models import Todos
 app = create_app()
 
-
-
-todos = ['Limpiar', 'Cocinar', 'Trabajar']
 
 
 @app.cli.command()
@@ -38,10 +36,13 @@ def index():
 def hello():
     user_ip = session.get('user_ip')
     username = current_user.id
+    id_user = session.get('id_user')
+    todos_user = Todos.query.filter_by(id_user=id_user).all()
 
     context = {
         'user_ip' : user_ip,
-        'todos' : todos,
+        'id_user' : id_user,
+        'todos' : todos_user,
         'username' : username
         
     }

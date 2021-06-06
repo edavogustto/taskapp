@@ -17,16 +17,16 @@ class Users(db.Model):
 
 class Todos(db.Model):
     __tablename__ = 'todos'
-    def __init__(self, id_todo, description, status, id_users):
-        self.id_todo = id_todo
+    def __init__(self, id, description, status, id_user):
+        self.id = id
         self.description = description
         self.status = status
-        self.id_users = id_users
+        self.id_user = id_user
 
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     description = db.Column(db.String(45), nullable=False)
     status = db.Column(db.Integer, nullable=False)
-    id_users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    id_user = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
 
 def get_user(username):

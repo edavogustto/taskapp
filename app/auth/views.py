@@ -26,6 +26,8 @@ def login():
             if check_password_hash(user_doc.password, password):
                 user_data = UserData(username, password)
                 user = UserModel(user_data)
+                session["id_user"] = user_doc.id
+
 
                 login_user(user)
 
