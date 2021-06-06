@@ -23,7 +23,7 @@ def login():
         user_doc = get_user(username)
 
         if user_doc is not None:
-            if check_password_hash(user_doc['password'], password):
+            if check_password_hash(user_doc.password, password):
                 user_data = UserData(username, password)
                 user = UserModel(user_data)
 
@@ -37,6 +37,7 @@ def login():
 
         else: 
             flash('El usuario no existe')
+            return redirect(url_for('auth.signup'))
 
         return redirect(url_for('index'))
 
