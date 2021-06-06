@@ -4,8 +4,8 @@ from flask import app, request, make_response, redirect, render_template, sessio
 import unittest
 from flask_login import login_required, current_user
 from app import create_app
-from app.forms import LoginForm
-from app.models import Todos, get_id_user
+from app.forms import TodoForm
+from app.models import Todos, db,  get_id_user
 
 app = create_app()
 
@@ -33,21 +33,34 @@ def index():
     return response
 
 
-@app.route('/hello', methods=['GET'])
+@app.route('/hello', methods=['GET', 'POST'])
 @login_required
 def hello():
     user_ip = session.get('user_ip')
     username = current_user.id
     id_user = get_id_user(username)
     todos_user = Todos.query.filter_by(id_user=id_user).all()
+    todo_form = TodoForm()
 
     context = {
         'user_ip' : user_ip,
         'id_user' : id_user,
         'todos' : todos_user,
-        'username' : username
+        'username' : username,
+        'todo_form' : todo_form
         
     }
+
+    if todo_form.validate_on_submit():
+        description = todo_form.description.data
+        new_todo = Todos(description=description, id_user=id_user)
+
+        db.session.add(new_todo)
+        db.session.commit()
+
+        flash('Tu tarea se creó con éxito')
+
+        return redirect(url_for('hello'))
 
 
     return render_template('hello.html', **context)

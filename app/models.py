@@ -17,10 +17,8 @@ class Users(db.Model):
 
 class Todos(db.Model):
     __tablename__ = 'todos'
-    def __init__(self, id, description, status, id_user):
-        self.id = id
+    def __init__(self, description, id_user):
         self.description = description
-        self.status = status
         self.id_user = id_user
 
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
