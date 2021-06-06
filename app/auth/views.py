@@ -23,9 +23,7 @@ def login():
         user_doc = get_user(username)
 
         if user_doc is not None:
-            password_db = user_doc.password
-
-            if password == password_db:
+            if check_password_hash(user_doc['password'], password):
                 user_data = UserData(username, password)
                 user = UserModel(user_data)
 
@@ -63,17 +61,26 @@ def signup():
         username = signup_form.username.data
         password = signup_form.password.data
 
-        user = Users.query.filter_by(username=username).first()
+        user_doc = Users.query.filter_by(username=username).first()
 
-        if user:
+        if user_doc:
             flash('Nombre de usuario existente')
             return redirect(url_for('auth.signup'))
 
-        new_user = Users(username=username, password=generate_password_hash(password, method='sha256'))
+        else:
+            new_user = Users(username=username, password=generate_password_hash(password, method='sha256'))
 
-        db.session.add(new_user)
-        db.session.commit()
+            db.session.add(new_user)
+            db.session.commit()
 
-        return redirect(url_for('auth.login'))
+            user_data = UserData(username, password)
+
+            user = UserModel(user_data)
+
+            login_user(user)
+
+            flash('Bienvenido!')
+
+            return redirect(url_for('hello'))
 
     return render_template('signup.html', **context)
