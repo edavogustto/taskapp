@@ -17,13 +17,14 @@ class Users(db.Model):
 
 class Todos(db.Model):
     __tablename__ = 'todos'
-    def __init__(self, description, id_user):
+    def __init__(self, description, done, id_user):
         self.description = description
         self.id_user = id_user
+        self.done = done
 
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    todo_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     description = db.Column(db.String(45), nullable=False)
-    status = db.Column(db.Integer, nullable=False)
+    done = db.Column(db.Boolean, nullable=False)
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
 
@@ -44,6 +45,8 @@ class UserModel(UserMixin):
     def __init__(self, user_data):
         self.id = user_data.username
         self.password = user_data.password
+
+
     @staticmethod   
     def query(username):
         user_doc = get_user(username)

@@ -4,7 +4,7 @@ from flask import app, request, make_response, redirect, render_template, sessio
 import unittest
 from flask_login import login_required, current_user
 from app import create_app
-from app.forms import TodoForm
+from app.forms import TodoForm , DeleteTodoForm
 from app.models import Todos, db,  get_id_user
 
 app = create_app()
@@ -41,19 +41,21 @@ def hello():
     id_user = get_id_user(username)
     todos_user = Todos.query.filter_by(id_user=id_user).all()
     todo_form = TodoForm()
+    delete_form = DeleteTodoForm()
 
     context = {
         'user_ip' : user_ip,
         'id_user' : id_user,
         'todos' : todos_user,
         'username' : username,
-        'todo_form' : todo_form
+        'todo_form' : todo_form,
+        'delete_form': delete_form,
         
     }
 
     if todo_form.validate_on_submit():
         description = todo_form.description.data
-        new_todo = Todos(description=description, id_user=id_user)
+        new_todo = Todos(description=description, done=False,  id_user=id_user)
 
         db.session.add(new_todo)
         db.session.commit()
@@ -64,3 +66,17 @@ def hello():
 
 
     return render_template('hello.html', **context)
+
+@app.route('/todos/delete/<todo_id>', methods=['GET', 'POST'])
+def delete(todo_id):
+
+    todo_del = Todos.query.filter_by(todo_id=todo_id).first()
+    
+    if todo_del is not None:
+
+        db.session.delete(todo_del)
+        db.session.commit()
+    
+    flash("A task was deleted!", "success")
+    
+    return redirect(url_for('hello'))
