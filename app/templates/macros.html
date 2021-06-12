@@ -2,7 +2,14 @@
 
 {% macro render_todo(todos_user, delete_form, update_form) %}
     <li class="list-group-item">
-        <span class="badge">{{ todos_user.done }}</span>
+        <span class="badge">
+            {%if todos_user.done %}
+            Done
+            {% else %}
+                To do
+            {% endif %}
+
+        </span>
         Descripcion: {{todos_user.description}}
 
         {{ wtf.quick_form(delete_form, action=url_for('delete', todo_id=todos_user.todo_id)) }}
