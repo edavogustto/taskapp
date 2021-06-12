@@ -4,7 +4,7 @@ from flask import app, request, make_response, redirect, render_template, sessio
 import unittest
 from flask_login import login_required, current_user
 from app import create_app
-from app.forms import TodoForm , DeleteTodoForm
+from app.forms import TodoForm , DeleteTodoForm, UpdateTodoForm
 from app.models import Todos, db,  get_id_user
 
 app = create_app()
@@ -42,6 +42,7 @@ def hello():
     todos_user = Todos.query.filter_by(id_user=id_user).all()
     todo_form = TodoForm()
     delete_form = DeleteTodoForm()
+    update_form = UpdateTodoForm()
 
     context = {
         'user_ip' : user_ip,
@@ -50,6 +51,7 @@ def hello():
         'username' : username,
         'todo_form' : todo_form,
         'delete_form': delete_form,
+        'update_form': update_form,
         
     }
 
@@ -80,3 +82,20 @@ def delete(todo_id):
     flash("A task was deleted!", "success")
     
     return redirect(url_for('hello'))
+
+@app.route('/todos/update/<todo_id>', methods=['GET', 'POST'])
+def update(todo_id):
+    todo_update = Todos.query.filter_by(todo_id=todo_id).first()
+    
+    if todo_update.done == 0:
+        todo_update.done = 1
+    else:
+        todo_update.done = 0
+
+    db.session.commit()
+
+    flash('Se ha cambiado el estado del ToDo')
+
+    return redirect(url_for('hello'))
+
+    
