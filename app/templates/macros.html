@@ -5,6 +5,6 @@
         <span class="badge">{{ todos_user.done }}</span>
         Descripcion: {{todos_user.description}}
 
-        {{ wtf.quick_form(delete_form, action=url_for('delete', todo_id=todos_user.id)) }}
+        {{ wtf.quick_form(delete_form, action=url_for('delete', todo_id=todos_user.todo_id)) }}
     </li>
 {% endmacro %}
